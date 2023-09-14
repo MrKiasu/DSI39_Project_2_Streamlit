@@ -84,7 +84,7 @@ def main():
     if button:
         # make prediction
         result = predict(hdb_age,full_flat_type,mrt_nearest_distance,mall_nearest_distance,postal_sector,mid)
-        st.success(f'The predicted HDB resale price is ${result} ± 50,000')
+        st.success(f'The predicted HDB resale price is ${result:,} ± 50,000')
 
 
 # load the train model
@@ -136,8 +136,7 @@ def predict(hdb_age,full_flat_type,mrt_nearest_distance,mall_nearest_distance,po
 
 
     #df = pd.DataFrame(lists).transpose()
-    
-    df.to_csv("output.csv")
+
     # making predictions using the train model
     prediction = model.predict(df)
     result = int(prediction)
