@@ -11,7 +11,7 @@ def main():
     st.markdown(style, unsafe_allow_html=True)
     left, right = st.columns((2,2))
 
-    hdb_age = left.number_input("Target HDB Age", min_value = 5, step = 1, format='%d', value = 5),
+    hdb_age = left.number_input("Target HDB Age", min_value = 5, max_value = 99, step = 1, format='%d', value = 5),
 
     full_flat_type = st.selectbox("What flat type-model ?",
                                   ("1 ROOM Improved", "2 ROOM DBSS", "2 ROOM Improved", "2 ROOM Model A", 
@@ -78,23 +78,23 @@ def main():
                                   "Seletar"))    
 
    
-    button = st.button('Predict')
+    button = st.button('Predict HDB Price')
     
     # if button is pressed
     if button:
         # make prediction
-        result = predict(hdb_age,full_flat_type,mrt_nearest_distance,mall_nearest_distance,postal_sector,mid)
+        result = predict_hdb_price(hdb_age,full_flat_type,mrt_nearest_distance,mall_nearest_distance,postal_sector,mid)
         st.success(f'The estimated HDB resale price is ${result:,}')
 
 
 # load the train model
-with open("HDB_model_final.pkl", 'rb') as rf:
-    model = pickle.load(rf)
+with open("HDB_model_final.pkl", 'rb') as lr:
+    model = pickle.load(lr)
 
 
-def predict(hdb_age,full_flat_type,mrt_nearest_distance,mall_nearest_distance,postal_sector,mid):
-    # processing user input
-
+def predict_hdb_price(hdb_age,full_flat_type,mrt_nearest_distance,mall_nearest_distance,postal_sector,mid):
+    
+    # assigning specific values based on user input
     tranc_year = 2023
     
     if mrt_nearest_distance == "A Stone's Throw Away(<5mins)":
@@ -124,15 +124,18 @@ def predict(hdb_age,full_flat_type,mrt_nearest_distance,mall_nearest_distance,po
     elif mid == "Skyscraper (16th storey and above)":
         mid = 40
 
+    #importing the required tables
     df_sector_CBD = pd.read_csv("postal_sector_mean_dist_CBD.csv")
     df_flat_sqm = pd.read_csv("full_flat_type_mean_sqm.csv")
     df_sector_user = pd.read_csv("postal_sector_user_selection.csv", sep = ";")
     df = pd.read_csv("feature_names.csv")
 
+    # vlookup the required values
     floor_area_sqm = df_flat_sqm.loc[df_flat_sqm["full_flat_type"] == full_flat_type]["mean_floor_area_sqm"].values[0]
     postal_sector = df_sector_user[df_sector_user["postal_sector_user"] == postal_sector]["postal_sector"].values[0]
     dist_CBD = df_sector_CBD[df_sector_CBD["postal_sector"] == postal_sector]["mean_dist_CBD"].values[0]
 
+    # insert user values into the df
     df["tranc_year"] = tranc_year
     
     postal_sector_select = "postal_sector_" + str(postal_sector)
@@ -141,21 +144,12 @@ def predict(hdb_age,full_flat_type,mrt_nearest_distance,mall_nearest_distance,po
     flat_select = "full_flat_type_" + full_flat_type
     df[flat_select] = 1
 
-
     df['mrt_nearest_distance'] = mrt_nearest_distance
     df['floor_area_sqm'] = floor_area_sqm
     df['mall_nearest_distance'] = mall_nearest_distance
     df["dist_CBD"] = dist_CBD
     df["mid"] = mid
     df["hdb_age"] = hdb_age
-
-
-    df.to_csv("output.csv")
-
-
-
-
-    #df = pd.DataFrame(lists).transpose()
 
     # making predictions using the train model
     prediction = model.predict(df)
