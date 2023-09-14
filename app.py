@@ -4,8 +4,8 @@ import pandas as pd
 
 
 def main():
-    style = """<div style='background-color:white; padding:12px'>
-              <h1 style='color:black'>What is the estimated resale price?</h1>
+    style = """<div style='background-color:black; padding:12px'>
+              <h1 style='color:white'>What is the estimated resale price?</h1>
        </div>"""
     
     st.markdown(style, unsafe_allow_html=True)
