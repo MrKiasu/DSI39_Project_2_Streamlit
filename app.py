@@ -147,7 +147,7 @@ def predict(hdb_age,full_flat_type,mrt_nearest_distance,mall_nearest_distance,po
     df['mall_nearest_distance'] = mall_nearest_distance
     df["dist_CBD"] = dist_CBD
     df["mid"] = mid
-
+    df["hdb_age"] = hdb_age
 
 
     df.to_csv("output.csv")
