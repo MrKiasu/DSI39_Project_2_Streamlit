@@ -129,9 +129,29 @@ def predict(hdb_age,full_flat_type,mrt_nearest_distance,mall_nearest_distance,po
     df_sector_user = pd.read_csv("postal_sector_user_selection.csv", sep = ";")
     df = pd.read_csv("feature_names.csv")
 
-    floor_area_sqm = df_flat_sqm.loc[df_flat_sqm["full_flat_type"] == full_flat_type]["mean_floor_area_sqm"]
+    floor_area_sqm = df_flat_sqm.loc[df_flat_sqm["full_flat_type"] == full_flat_type]["mean_floor_area_sqm"].values[0]
     postal_sector = df_sector_user[df_sector_user["postal_sector_user"] == postal_sector]["postal_sector"].values[0]
     dist_CBD = df_sector_CBD[df_sector_CBD["postal_sector"] == postal_sector]["mean_dist_CBD"].values[0]
+
+    df["tranc_year"] = tranc_year
+    
+    postal_sector_select = "postal_sector_" + str(postal_sector)
+    df[postal_sector_select] = 1
+
+    flat_select = "full_flat_type_" + full_flat_type
+    df[flat_select] = 1
+
+
+    df['mrt_nearest_distance'] = mrt_nearest_distance
+    df['floor_area_sqm'] = floor_area_sqm
+    df['mall_nearest_distance'] = mall_nearest_distance
+    df["dist_CBD"] = dist_CBD
+    df["mid"] = mid
+
+
+
+    df.to_csv("output.csv")
+
 
 
 
