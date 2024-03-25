@@ -70,7 +70,6 @@ def main():
                                   "Jurong",
                                   "Bukit Panjang",
                                   "Kranji",
-                                  "Upper Thomson",
                                   "Yishun",
                                   "Seletar"))    
 
